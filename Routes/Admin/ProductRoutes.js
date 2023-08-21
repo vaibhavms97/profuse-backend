@@ -25,6 +25,7 @@ function postRoutes() {
 function putRoutes() {
 }
 function patchRoutes() {
+    ProductRoutes.patch('/edit-product',GlobalMiddlewares.authenticate,GlobalMiddlewares.ractifyError,ProductController.editProduct)
 }
 function deleteRoutes() {
     ProductRoutes.delete('/delete-product',GlobalMiddlewares.authenticate,GlobalMiddlewares.ractifyError,ProductController.deleteProduct)

@@ -9,8 +9,10 @@ exports.addProduct = async(req,res,next)=>{
             product_offering1:data?.product_offering1,
             product_offering2:data?.product_offering2,
             product_offering3:data?.product_offering3,
+            product_offering1_days: data?.product_offering1_days,
+            product_offering2_days: data?.product_offering2_days,
+            product_offering3_days: data?.product_offering3_days,
             product_amount:data?.product_amount,
-            category_id: data?.category_id,
             created_on: new Date(),
           });
 
@@ -68,13 +70,33 @@ exports.getProductList=async(req,res,next)=>{
 
 exports.deleteProduct=async(req,res,next)=>{
     try {
-        const data = req.body;
-        await Product.deleteOne({_id:data?._id});
+        await Product.deleteOne({_id:req.query?._id});
         res.status(200).send({
             status:200,
             message:'Product Deleted Successfully',
             data:{}
         })
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.editProduct = async(req,res,next)=>{
+    try {
+        const data = req.body;
+        const product = await Product.findOne({_id:data?._id});
+        product.product_name = data?.product_name;
+        product.product_description = data?.product_description;
+        product.product_offering1 = data?.product_offering1;
+        product.product_offering2 = data?.product_offering2;
+        product.product_offering3 = data?.product_offering3;
+        product.product_offering1_days =  data?.product_offering1_days;
+        product.product_offering2_days =  data?.product_offering2_days;
+        product.product_offering3_days =  data?.product_offering3_days;
+        product.product_amount = data?.product_amount;
+        product.updated_on =  new Date();
+        const updateProduct = await product.save();
+        res.send({ status: 200, message: "Product update successfully", data: { updateProduct } });
     } catch (error) {
         next(error)
     }

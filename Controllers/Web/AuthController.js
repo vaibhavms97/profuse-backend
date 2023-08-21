@@ -88,6 +88,7 @@ exports.getUserProfile = async(req,res,next)=>{
     next(error)
   }
 }
+
 exports.updateUserProfile = async(req,res,next)=>{
   try {
     const userData = req.userData;
