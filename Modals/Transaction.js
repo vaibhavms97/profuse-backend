@@ -20,8 +20,14 @@ const Transaction = new Mongoose.Schema({
     amount:{
         type:Number,
     },
+    invest_percent:{
+        type:Number,
+    },
+    no_of_days:{
+        type:Number,
+    },
     created_at: { type: Date, default: Date.now },
-    updated_at: { type: Date, default: Date.now }
+    updated_at: { type: Date, default: Date.now },
 })
 
 Transaction.plugin(aggregatePaginate)

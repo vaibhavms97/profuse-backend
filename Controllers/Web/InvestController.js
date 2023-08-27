@@ -23,7 +23,9 @@ exports.amountInvest = async (req, res, next) => {
             account_id: account?._id,
             product_id: data?.product_id,
             tnx_id: 'tnx' + (Math.random() + 1).toString(36).substring(7),
-            amount: Number(data?.invest_amount)
+            amount: Number(data?.invest_amount),
+            invest_percent: Number(data?.invest_percent),
+            no_of_days: Number(data?.no_of_days),
         })
         await investData.save();
         res.status(200).send({
