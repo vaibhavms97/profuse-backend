@@ -21,5 +21,5 @@ const UserEarnings = new Mongoose.Schema({
 })
 
 UserEarnings.plugin(aggregatePaginate)
-module.exports = Mongoose.model('AdminEarnings', UserEarnings);
+module.exports = Mongoose.model('UserEarnings', UserEarnings);
 
