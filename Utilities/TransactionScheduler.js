@@ -5,7 +5,7 @@ const Transaction = require('../Modals/Transaction');
 const UserEarnings = require('../Modals/UserEarnings');
 
 const TransactionSheduler = async () => {
-  cron.schedule("30 14 * * *", async () =>  {
+  cron.schedule("15 14 * * *", async () =>  {
     const currentDate = new Date();
     const dayBeforeYesterdayDate = new Date();
     const month = currentDate.getMonth();
