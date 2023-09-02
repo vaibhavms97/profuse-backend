@@ -4,7 +4,8 @@ const app = express();
 const cors = require('cors')
 const mongoose = require('mongoose');
 const {env} = require('../Environments/env');
-const Routes = require('../Routes/routes')
+const Routes = require('../Routes/routes');
+const TransactionSheduler = require('../Utilities/TransactionScheduler');
 
 function initilization() {
     setupCors()
@@ -51,6 +52,8 @@ function setupError404Handler() {
         });
     });
 }
+
+TransactionSheduler();
 
 function setupErrorHandler() {
     app.use((err, req, res, next) => {

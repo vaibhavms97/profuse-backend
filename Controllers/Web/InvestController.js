@@ -10,7 +10,7 @@ exports.amountInvest = async (req, res, next) => {
         console.log(data);
         const account = await Account.findOne({ user_id: userData?._id })
         account.account_balance -= Number(data?.invest_amount)
-        account.vested_balance += Number(data?.invest_amount) * Number(data?.invest_percent)
+        account.vested_balance += Number(data?.invest_amount)
         account.update_at = new Date()
         await account.save()
 
@@ -26,6 +26,7 @@ exports.amountInvest = async (req, res, next) => {
             amount: Number(data?.invest_amount),
             invest_percent: Number(data?.invest_percent),
             no_of_days: Number(data?.no_of_days),
+            ends_at: data?.ends_at,
         })
         await investData.save();
         res.status(200).send({

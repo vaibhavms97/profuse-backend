@@ -26,8 +26,15 @@ const Transaction = new Mongoose.Schema({
     no_of_days:{
         type:Number,
     },
+    status: {
+        type: String,
+        enum:['Pending','Completed'],
+        default:'Pending'
+    },
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now },
+    ends_at: { type: Date },
+    withdrawn_at: { type: Date },
 })
 
 Transaction.plugin(aggregatePaginate)
