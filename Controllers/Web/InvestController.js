@@ -2,6 +2,8 @@ const User = require("../../Modals/User");
 const Account = require("../../Modals/Account");
 const Transaction = require("../../Modals/Transaction");
 const Product = require("../../Modals/Product");
+const UserEarnings = require("../../Modals/UserEarnings");
+const AdminEarnings = require("../../Modals/AdminEarnings");
 
 exports.amountInvest = async (req, res, next) => {
     try {
@@ -73,6 +75,51 @@ exports.getTransactionList = async (req, res, next) => {
             status: 200,
             message: 'Transaction List',
             data: { transactions }
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.withdrawTransaction = async(req, res, next) => {
+    try {
+        const data = req.body;
+        const transaction = await Transaction.findOne({_id: data.transaction_id});
+        const currentDate = new Date();
+        const month = currentDate.getMonth();
+        const year = currentDate.getFullYear();
+        let adminEarnings = 0;
+        let userEarnings = 0;
+        let earnings = 0;
+        const removeInvestedAmount = transaction.amount * -1;
+        const totalEarnings = (transaction.invest_percent/100)* transaction.amount;
+        if(transaction.ends_at < currentDate) {
+            adminEarnings = Math.round((0.02*totalEarnings + Number.EPSILON)*100) / 100;
+            userEarnings = Math.round((0.98*totalEarnings + Number.EPSILON)*100) / 100;
+            earnings = transaction.amount + userEarnings;
+        } else {
+            adminEarnings = Math.round((0.98*totalEarnings + Number.EPSILON)*100) / 100;
+            userEarnings = Math.round((0.02*totalEarnings + Number.EPSILON)*100) / 100;
+            earnings = transaction.amount + userEarnings;
+        }
+        await Account.findOneAndUpdate({user_id: transaction.user_id.toString()}, {$inc: {account_balance: earnings}, $inc: {vested_balance: removeInvestedAmount}})
+        await UserEarnings.findOneAndUpdate(
+            {year: year, month: month, user_id: transaction.user_id.toString()}, 
+            {$inc:{earnings: userEarnings}, $push: {transaction_ids: transaction._id.toString()}, $setOnInsert: {year: year, month: month}},
+            {upsert: true, returnOriginal: false}
+        )
+        await AdminEarnings.findOneAndUpdate(
+            {year: year, month: month}, 
+            {$inc: {earnings: adminEarnings}, $push: {transaction_ids: transaction._id.toString()}, $setOnInsert: {year: year, month: month}},
+            {upsert: true, returnOriginal: false}
+        )
+        await Transaction.findOneAndUpdate(
+            {_id: transaction._id.toString()},
+            {$set: {status: "Completed", withdrawn_at: currentDate, admin_earnings: adminEarnings, user_earnings: userEarnings}}
+        )
+        res.send({
+            status: 200,
+            message: 'Withdrawn transaction successfully',
         })
     } catch (error) {
         next(error)

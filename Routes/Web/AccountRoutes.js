@@ -27,6 +27,7 @@ function postRoutes() {
 function putRoutes() {
 }
 function patchRoutes() {
+    AccountRoutes.post('/withdraw-transaction',GlobalMiddlewares.authenticate,UserValidation.checkUserStatus(),GlobalMiddlewares.ractifyError,InvestController.withdrawTransaction)
     // AccountRoutes.patch('/update-user-profile',GlobalMiddlewares.authenticate,GlobalMiddlewares.ractifyError,AuthController.updateUserProfile)
 }
 

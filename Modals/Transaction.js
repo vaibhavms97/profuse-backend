@@ -20,6 +20,12 @@ const Transaction = new Mongoose.Schema({
     amount:{
         type:Number,
     },
+    admin_earnings:{
+        type: Number,
+    },
+    user_earnings: {
+        type: Number,
+    },
     invest_percent:{
         type:Number,
     },
