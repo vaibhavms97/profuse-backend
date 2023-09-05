@@ -4,6 +4,9 @@ const Transaction = require("../../Modals/Transaction");
 const Product = require("../../Modals/Product");
 const UserEarnings = require("../../Modals/UserEarnings");
 const AdminEarnings = require("../../Modals/AdminEarnings");
+const mongoose = require("mongoose")
+const ObjectId = mongoose.Types.ObjectId;
+
 
 exports.amountInvest = async (req, res, next) => {
     try {
@@ -43,6 +46,7 @@ exports.amountInvest = async (req, res, next) => {
 }
 
 exports.getTransactionList = async (req, res, next) => {
+  const userData = req.userData;
     try {
         const options = {
             page: parseInt(req.query.page) || 1,
@@ -62,10 +66,16 @@ exports.getTransactionList = async (req, res, next) => {
                     'foreignField': '_id',
                     'as': 'product_id'
                 }
-            }, {
+            }, 
+            {
                 '$unwind': {
                     'path': '$product_id',
                     'preserveNullAndEmptyArrays': true
+                }
+            },
+            {
+                '$match': {
+                    user_id: new ObjectId(userData?._id),
                 }
             }
         ]
@@ -102,7 +112,7 @@ exports.withdrawTransaction = async(req, res, next) => {
             userEarnings = Math.round((0.02*totalEarnings + Number.EPSILON)*100) / 100;
             earnings = transaction.amount + userEarnings;
         }
-        await Account.findOneAndUpdate({user_id: transaction.user_id.toString()}, {$inc: {account_balance: earnings}, $inc: {vested_balance: removeInvestedAmount}})
+        await Account.findOneAndUpdate({user_id: transaction.user_id.toString()}, {$inc: {account_balance: earnings, vested_balance: removeInvestedAmount}})
         await UserEarnings.findOneAndUpdate(
             {year: year, month: month, user_id: transaction.user_id.toString()}, 
             {$inc:{earnings: userEarnings}, $push: {transaction_ids: transaction._id.toString()}, $setOnInsert: {year: year, month: month}},
