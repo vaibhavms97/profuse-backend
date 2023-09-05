@@ -12,7 +12,6 @@ exports.amountInvest = async (req, res, next) => {
     try {
         const userData = req.userData;
         const data = req.body;
-        console.log(data);
         const account = await Account.findOne({ user_id: userData?._id })
         account.account_balance -= Number(data?.invest_amount)
         account.vested_balance += Number(data?.invest_amount)
@@ -112,6 +111,7 @@ exports.withdrawTransaction = async(req, res, next) => {
             userEarnings = Math.round((0.02*totalEarnings + Number.EPSILON)*100) / 100;
             earnings = transaction.amount + userEarnings;
         }
+        console.log("earnings", earnings)
         await Account.findOneAndUpdate({user_id: transaction.user_id.toString()}, {$inc: {account_balance: earnings, vested_balance: removeInvestedAmount}})
         await UserEarnings.findOneAndUpdate(
             {year: year, month: month, user_id: transaction.user_id.toString()}, 
