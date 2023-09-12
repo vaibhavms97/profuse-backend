@@ -101,6 +101,7 @@ exports.editProduct = async(req,res,next)=>{
         product.product_offering2_days =  data?.product_offering2_days;
         product.product_offering3_days =  data?.product_offering3_days;
         product.product_amount = data?.product_amount;
+        product.product_image = data?.product_image,
         product.updated_on =  new Date();
         const updateProduct = await product.save();
         res.send({ status: 200, message: "Product update successfully", data: { updateProduct } });

@@ -105,11 +105,14 @@ exports.withdrawTransaction = async(req, res, next) => {
         if(transaction.ends_at < currentDate) {
             adminEarnings = Math.round((0.02*totalEarnings + Number.EPSILON)*100) / 100;
             userEarnings = Math.round((0.98*totalEarnings + Number.EPSILON)*100) / 100;
+            console.log("userEarnings", userEarnings);
             earnings = Math.round((transaction.amount + userEarnings + Number.EPSILON)*100) / 100;
         } else {
             adminEarnings = Math.round((0.98*totalEarnings + Number.EPSILON)*100) / 100;
             userEarnings = Math.round((0.02*totalEarnings + Number.EPSILON)*100) / 100;
+            console.log("userEarnings", userEarnings);
             earnings = Math.round((transaction.amount + userEarnings + Number.EPSILON)*100) / 100;
+            console.log("earnings", earnings);
         }
         await Account.findOneAndUpdate({user_id: transaction.user_id.toString()}, {$inc: {account_balance: earnings, vested_balance: removeInvestedAmount, total_earnings: userEarnings, total_invested: transaction.amount}})
         await UserEarnings.findOneAndUpdate(
