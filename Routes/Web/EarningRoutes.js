@@ -15,6 +15,7 @@ initilization();
 
 function getRoutes() {
     EarningRoutes.get('/get-user-earnings',GlobalMiddlewares.authenticate,GlobalMiddlewares.ractifyError,EarningController.getUserEarnings)
+    EarningRoutes.get('/get-monthly-earnings',GlobalMiddlewares.authenticate,GlobalMiddlewares.ractifyError,EarningController.getMonthlyEarnings)
 }
 
 function postRoutes() {

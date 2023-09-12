@@ -18,7 +18,10 @@ function initilization() {
 
 initilization();
 
+
 function app() {
+    routes.use('/uploads', express.static('uploads'))
+
     // routes.use('/app/user',RegistrationRouter)
     // routes.use('/app/contact',ContactRoutes)
     // routes.use('/app/project',ProjectRouter)

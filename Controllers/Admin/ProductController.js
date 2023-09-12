@@ -2,7 +2,7 @@ const Product = require('../../Modals/Product');
 
 exports.addProduct = async(req,res,next)=>{
     try {
-        const data = req.body;
+        const data = JSON.parse(req.body.request).data;
         const createProduct = new Product({
             product_name:data?.product_name,
             product_description:data?.product_description,
@@ -13,6 +13,7 @@ exports.addProduct = async(req,res,next)=>{
             product_offering2_days: data?.product_offering2_days,
             product_offering3_days: data?.product_offering3_days,
             product_amount:data?.product_amount,
+            product_image: req.file.path,
             created_on: new Date(),
           });
 
@@ -54,6 +55,12 @@ exports.getProductList=async(req,res,next)=>{
                 'path': '$category_id', 
                 'preserveNullAndEmptyArrays': true
               }
+            }, {
+                '$match': {
+                    product_amount: {
+                        "$gt": 0
+                    }
+                }
             }
           ]
           let queryAggregate = Product.aggregate(query);
@@ -97,6 +104,19 @@ exports.editProduct = async(req,res,next)=>{
         product.updated_on =  new Date();
         const updateProduct = await product.save();
         res.send({ status: 200, message: "Product update successfully", data: { updateProduct } });
+    } catch (error) {
+        next(error)
+    }
+}
+
+exports.deleteProducts = async(req, res, next) => {
+    try {
+        await Product.deleteMany({"product_name": req.body.name})
+        res.status(200).send({
+            status:200,
+            message:'Products Deleted Successfully',
+            data:{}
+        })
     } catch (error) {
         next(error)
     }
