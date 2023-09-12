@@ -25,7 +25,7 @@ const TransactionSheduler = async () => {
         const earnings = transaction.amount + userEarnings;
         const removeInvestedAmount = transaction.amount * -1;
         console.log("earnings", earnings, "adminEarnings", adminEarnings, "totalEarnings", totalEarnings);
-        accountUpdatepromises.push(Account.findOneAndUpdate({user_id: transaction.user_id.toString()}, {$inc: {account_balance: earnings, vested_balance: removeInvestedAmount}}));
+        accountUpdatepromises.push(Account.findOneAndUpdate({user_id: transaction.user_id.toString()}, {$inc: {account_balance: earnings, vested_balance: removeInvestedAmount, total_earnings: userEarnings, total_invested: transaction.amount}}));
         userEarningsPromises.push(
           UserEarnings.findOneAndUpdate(
             {year: year, month: month, user_id: transaction.user_id.toString()}, 

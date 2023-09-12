@@ -2,7 +2,7 @@ const Product = require('../../Modals/Product');
 
 exports.addProduct = async(req,res,next)=>{
     try {
-        const data = JSON.parse(req.body.request).data;
+        const data = req.body;
         const createProduct = new Product({
             product_name:data?.product_name,
             product_description:data?.product_description,
@@ -13,7 +13,7 @@ exports.addProduct = async(req,res,next)=>{
             product_offering2_days: data?.product_offering2_days,
             product_offering3_days: data?.product_offering3_days,
             product_amount:data?.product_amount,
-            product_image: req.file.path,
+            product_image: data?.product_image,
             created_on: new Date(),
           });
 

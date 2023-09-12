@@ -111,7 +111,7 @@ exports.withdrawTransaction = async(req, res, next) => {
             userEarnings = Math.round((0.02*totalEarnings + Number.EPSILON)*100) / 100;
             earnings = Math.round((transaction.amount + userEarnings + Number.EPSILON)*100) / 100;
         }
-        await Account.findOneAndUpdate({user_id: transaction.user_id.toString()}, {$inc: {account_balance: earnings, vested_balance: removeInvestedAmount}})
+        await Account.findOneAndUpdate({user_id: transaction.user_id.toString()}, {$inc: {account_balance: earnings, vested_balance: removeInvestedAmount, total_earnings: userEarnings, total_invested: transaction.amount}})
         await UserEarnings.findOneAndUpdate(
             {year: year, month: month, user_id: transaction.user_id.toString()}, 
             {$inc:{earnings: userEarnings}, $push: {transaction_ids: transaction._id.toString()}, $setOnInsert: {year: year, month: month}},

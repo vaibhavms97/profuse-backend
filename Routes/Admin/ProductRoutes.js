@@ -20,7 +20,7 @@ function getRoutes() {
 }
 
 function postRoutes() {
-    ProductRoutes.post('/create-product',GlobalMiddlewares.authenticate,GlobalMiddlewares.ractifyError, upload.single('product_image'), ProductController.addProduct)
+    ProductRoutes.post('/create-product',GlobalMiddlewares.authenticate,GlobalMiddlewares.ractifyError, ProductController.addProduct)
 }
 
 function putRoutes() {

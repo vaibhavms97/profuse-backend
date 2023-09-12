@@ -18,6 +18,14 @@ const Account = new Mongoose.Schema({
         type:Number,
         default:0
     },
+    total_invested: {
+        type: Number,
+        default: 0
+    },
+    total_earnings: {
+        type: Number,
+        default: 0
+    },
     created_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now }
 })
