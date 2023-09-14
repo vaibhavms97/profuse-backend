@@ -15,6 +15,7 @@ exports.amountInvest = async (req, res, next) => {
         const account = await Account.findOne({ user_id: userData?._id })
         account.account_balance -= Number(data?.invest_amount)
         account.vested_balance += Number(data?.invest_amount)
+        account.total_invested += Number(data?.invest_amount)
         account.update_at = new Date()
         await account.save()
 
@@ -100,21 +101,22 @@ exports.withdrawTransaction = async(req, res, next) => {
         let adminEarnings = 0;
         let userEarnings = 0;
         let earnings = 0;
-        const removeInvestedAmount = transaction.amount * -1;
+        const removeInvestedAmount = transaction.amount;
         const totalEarnings = (transaction.invest_percent/100)* transaction.amount;
         if(transaction.ends_at < currentDate) {
             adminEarnings = Math.round((0.02*totalEarnings + Number.EPSILON)*100) / 100;
             userEarnings = Math.round((0.98*totalEarnings + Number.EPSILON)*100) / 100;
-            console.log("userEarnings", userEarnings);
             earnings = Math.round((transaction.amount + userEarnings + Number.EPSILON)*100) / 100;
         } else {
             adminEarnings = Math.round((0.98*totalEarnings + Number.EPSILON)*100) / 100;
             userEarnings = Math.round((0.02*totalEarnings + Number.EPSILON)*100) / 100;
-            console.log("userEarnings", userEarnings);
             earnings = Math.round((transaction.amount + userEarnings + Number.EPSILON)*100) / 100;
-            console.log("earnings", earnings);
         }
-        await Account.findOneAndUpdate({user_id: transaction.user_id.toString()}, {$inc: {account_balance: earnings, vested_balance: removeInvestedAmount, total_earnings: userEarnings, total_invested: transaction.amount}})
+        const account = await Account.findOne({user_id: transaction.user_id.toString()})
+        account.account_balance += earnings
+        account.vested_balance -= removeInvestedAmount
+        account.total_earnings += userEarnings
+        account.save();
         await UserEarnings.findOneAndUpdate(
             {year: year, month: month, user_id: transaction.user_id.toString()}, 
             {$inc:{earnings: userEarnings}, $push: {transaction_ids: transaction._id.toString()}, $setOnInsert: {year: year, month: month}},
